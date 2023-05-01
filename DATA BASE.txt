@@ -1,0 +1,436 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema gestioneventos
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema gestioneventos
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `gestioneventos` DEFAULT CHARACTER SET utf8 ;
+USE `gestioneventos` ;
+
+-- -----------------------------------------------------
+-- Table `gestioneventos`.`descuento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestioneventos`.`descuento` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `porcentaje` DOUBLE NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  UNIQUE INDEX `nombre_UNIQUE` (`nombre` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_mysql500_ci;
+
+
+-- -----------------------------------------------------
+-- Table `gestioneventos`.`evento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestioneventos`.`evento` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `tematica` VARCHAR(45) NOT NULL,
+  `precio` DOUBLE NOT NULL,
+  `duracion` INT NOT NULL,
+  `reparto` VARCHAR(200) NOT NULL,
+  `director` VARCHAR(45) NOT NULL,
+  `descripcion` VARCHAR(200) NOT NULL,
+  `poster` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 98247
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestioneventos`.`recinto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestioneventos`.`recinto` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `tipo` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 99922
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestioneventos`.`silla`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestioneventos`.`silla` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `estado` VARCHAR(15) NOT NULL,
+  `posicion` VARCHAR(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 89647
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestioneventos`.`persona`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestioneventos`.`persona` (
+  `numero_documento` VARCHAR(45) NOT NULL,
+  `tipo_documento` VARCHAR(45) NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `correo` VARCHAR(45) NOT NULL,
+  `celular` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`numero_documento`),
+  UNIQUE INDEX `numero_documento_UNIQUE` (`numero_documento` ASC) VISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestioneventos`.`login`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestioneventos`.`login` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `usuario` VARCHAR(45) NOT NULL,
+  `tipo` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  `id_persona` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `usuario_UNIQUE` (`usuario` ASC) VISIBLE,
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  INDEX `id_persona` (`id_persona` ASC) VISIBLE,
+  CONSTRAINT `login_ibfk_1`
+    FOREIGN KEY (`id_persona`)
+    REFERENCES `gestioneventos`.`persona` (`numero_documento`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 12
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestioneventos`.`funcion`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestioneventos`.`funcion` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `fecha` DATE NOT NULL,
+  `hora` TIME NOT NULL,
+  `id_login` INT NOT NULL,
+  `id_recinto` INT NOT NULL,
+  `id_silla` INT NOT NULL,
+  `id_evento` INT NOT NULL,
+  `valor` DOUBLE NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  INDEX `funcion_ibfk_1` (`id_evento` ASC) VISIBLE,
+  INDEX `funcion_ibfk_2` (`id_recinto` ASC) VISIBLE,
+  INDEX `funcion_ibfk_3` (`id_silla` ASC) VISIBLE,
+  INDEX `funcion_ibfk_4` (`id_login` ASC) VISIBLE,
+  CONSTRAINT `funcion_ibfk_1`
+    FOREIGN KEY (`id_evento`)
+    REFERENCES `gestioneventos`.`evento` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `funcion_ibfk_2`
+    FOREIGN KEY (`id_recinto`)
+    REFERENCES `gestioneventos`.`recinto` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `funcion_ibfk_3`
+    FOREIGN KEY (`id_silla`)
+    REFERENCES `gestioneventos`.`silla` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `funcion_ibfk_4`
+    FOREIGN KEY (`id_login`)
+    REFERENCES `gestioneventos`.`login` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 98375
+DEFAULT CHARACTER SET = utf8;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+ALTER TABLE `gestioneventos`.`funcion` 
+CHANGE COLUMN `valor` `valor` DOUBLE NULL ;
+
+ALTER TABLE `gestioneventos`.`login` 
+DROP FOREIGN KEY `login_ibfk_1`;
+ALTER TABLE `gestioneventos`.`login` 
+ADD CONSTRAINT `login_ibfk_1`
+  FOREIGN KEY (`id_persona`)
+  REFERENCES `gestioneventos`.`persona` (`numero_documento`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+
+
+
+
+
+
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('44318 ', 'Don Juan Tenorio', ' Comedia', '25000', '120', 'Juan Tenorio', 'José Zorilla ', ' Una de las mejores comedias en castellano de nuestro siglo', 'imagenes/donjuantenorio.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('44319', 'Divina Comedia', 'Epico', '47000', '290', ' Giovanni Boccacio', 'Dante Alighieri', 'Relación de un viaje a lo largo del cual el autor encuentra su propia identidad', 'imagenes/divinacomedia.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('44320', 'Otelo', 'Tragedia', '48000', '340', ' Enrique Borrás', 'William Shakespeare', ' Otelo es una tragedia, como Hamlet, Macbeth y El rey Lear.', 'imagenes/otelo.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('45321', 'Mision de Rescate', 'Accion', '39000', '200', 'Chris Hemsworth, Rudhrask Jaiswal y Randeep Hooda', 'Sam Hargrave', 'Recibió reseñas mixtas de parte de la crítica, quienes alabaron las actuaciones de Hemsworth y Hooda', 'imagenes/misionderescate.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('45322', 'Enola Holmes', 'Misterio', '29000', '123', 'Millie Bibby Brown, Sam Caflin y Henry Cavill', 'Harry Bradbeer', 'Narra la historia de Enola Holmes mientras se embarca en la busqueda de su madre junto a sus hermanos. ', 'imagenes/enolaholmes.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('45323', 'Jojo Rabbit', 'Comedia negra', '32000', '180', 'Roman Griffin Davis y Thomasin McKenzie', 'Taika Waititi', 'Obra basada en el libro Caging Skies de Christine Leunens ', 'imagenes/jojorabbit.jpg');
+
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('23112', 'Hombre con hombre mujer con mujer', 'comedia', '30000', '200', 'Fernando Solorzano y Marcela carvajal', 'Ania y Pawel Nowicki ', 'Será la nueva comedia de amor y desamor', 'imagenes/hombre_mujer.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('23451', 'Crónica de una muerte anunciada', 'Tragedia', '25000', '75', 'Carlos Fujimori, Andrea Vidal, Juan Pinilla y Lucy Valdivia', 'Marcelo Bailey.', 'Se basa en un hecho histórico acontecido en la tierra natal del escritor', 'imagenes/cronica.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('23177', 'La Celestina', 'Tragicomedia', '28000', '130', 'Marta Belmonte, Diana Bernedo, Miguel Cubero, Palmira Ferrer y Chete Lera', 'José Luis Gómez', 'La obra hilvana una trama donde las costumbres, relaciones y sentimientos tienen igual importancia para todos independientemente de su condición social.', 'imagenes/la_celestina.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('34222', 'Seguridad informática', 'Tecnología', '40000', '200', 'Ing Felipe Corredor,  ing Freddy Vega e ing Carlos Quintero', 'Enrrique Martínez', 'Conéctate con otros estudiantes, comparte tus proyectos y construye conexiones profesionales', 'imagenes/s_informatica.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('31224', 'Jinjer en Bogotá', 'Death metal progresivo', '20000', '150', 'Tatiana Shmaylyuk, Eugene Abdiukhanov, Roman Ibramkhalilov y Vlad Ulasevich ', 'Pablo Carranza', 'Regresa en concierto presentando a su publico una vez más su extrema presentación, estilo y la inconfundible voz de la bella Tatiana Shmaylyuk', 'imagenes/jinjer.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('32115', 'Regresa TIERRA SANTA en concierto a Colombia', 'heavy metal y power metal épico de La Rioja', '54000', '130', 'Ángel San Juan, Roberto Gonzalo, David Carrica, Juanan San Martín y Dan Diez', 'Eduardo Carrillo', 'La legendaria agrupación de La Rioja España celebra más de 30 años de historia con una especial gira de conciertos que recorrera Amercia Latina', 'imagenes/tierra_santa.jpg');
+
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('98245', 'Dos Caras', 'Drama', '23000', '270', 'Emelie Ortegra y Frank Ribery', 'Martin Sebastian', 'Una obra que ha dejado sin aliento a miles de espectadores', 'imagenes/arcadia.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('76542', 'Hamlet', 'Tragedia', '42000', '330', ' Ofelia, Príncipe Hamlet, Claudius, Polonio y Horacio', 'William Shakespeare', 'La tragedia de Hamlet, príncipe de Dinamarca, o simplemente Hamlet', 'imagenes/hamlet.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('88756', 'Chicago', 'Drama', '15000', '130', 'Nicola Fella y Andrea Boccelli', 'Antonio Blanco', 'Magistral obra realizada por una de las mentes creadoras del teatro', 'imagenes/chicago.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('77744', 'Joker', 'Suspenso', '25000', '160', 'Robert De Niro', 'Todd Phillips', 'Obra adaptada del comic Joker creado por DC COMICS ', 'imagenes/joker.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('11226', 'Cronicas de Narnia', 'Epica', '37000', '230', 'Alfredo Phoenix y Alice Cooper', 'Alfredo Wallace', 'Un ropero esconde el secreto de todos los males del mundo', 'imagenes/leon.jpg');
+INSERT INTO `gestioneventos`.`evento` (`id`, `nombre`, `tematica`, `precio`, `duracion`, `reparto`, `director`, `descripcion`, `poster`) VALUES ('44324', 'Star Wars', 'Ciencia ficcion', '89000', '300', 'Arturito Ramirez, Jedi Salamaca y Jose Perez', 'Enrique Segoviano', 'Obra aclamada por fans de Star Wars nominada a 7 premios latinos.', 'imagenes/stars.jpg');
+
+
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('50001', 'ocupada', 'B0');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('50002', 'ocupada', 'B1');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('50003', 'ocupada', 'B2');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('50004', 'ocupada', 'B3');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('50005', 'ocupada', 'B4');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('50006', 'ocupada', 'B5');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('50007', 'ocupada', 'B6');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('50008', 'ocupada', 'B7');
+
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('60001', 'ocupada', 'E1');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('60002', 'ocupada', 'E5');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('60003', 'ocupada', 'E6');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('60004', 'ocuoada', 'E7');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('60005', 'ocupada', 'E8');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('60006', 'ocupada', 'E9');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('60007', 'ocupada', 'E10');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('60008', 'ocupada', 'F1');
+
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('89513', 'ocupada', 'D1');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('89514', 'ocupada', 'D2');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('89515', 'ocupada', 'D3');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('89516', 'ocupada', 'D4');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('89517', 'ocupada', 'D5');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('77213', 'ocupada', 'E1');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('77214', 'ocupada', 'E2');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('77215', 'ocupada', 'E3');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('77216', 'ocupada', 'E4');
+INSERT INTO `gestioneventos`.`silla` (`id`, `estado`, `posicion`) VALUES ('77217', 'ocupada', 'E5');
+
+
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('99912', 'Nicola Tesla', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('98798', 'Jaime Lombano', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('64555', 'Tomas Monsalve', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('32232', 'Santiago Segundo', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('77665', 'Juan Ignacio', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('12566', 'Velez Torres', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('66548', 'Catalina Tercera', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('23142', 'Diosdado Cabello', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('86283', 'Aurelio Maximo', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('92537', 'Juan De Aquino', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('76278', 'Teresa Tercera', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('56721', 'Jimena Maria', 'Auditorio');
+
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('12333', 'La Vorágine', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('23344', 'Carlos Hoyos', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('32212', 'Eduado Carranza', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('21223', 'Carlos Galán', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('32292', 'Jorge Gaitán', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('23442', 'Nayib Amad', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('32445', 'La sabana', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('32331', 'León de Greiff', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('32565', 'Hall 74', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('34227', 'Jorge Molina', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('34559', 'William Shakespeare', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('34598', 'Platinum', 'Auditorio');
+
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('23113', 'Cristobal Colon', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('23112', 'La Scala', 'Teatro');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('25333', 'Carnegie Hall', 'Auditorio');
+INSERT INTO `gestioneventos`.`recinto` (`id`, `nombre`, `tipo`) VALUES ('25334', 'Palacio de Bellas Artes', 'Auditorio');
+
+INSERT INTO `gestioneventos`.`descuento` (`id`, `nombre`, `porcentaje`) VALUES ('3', 'descuento_vip', '0.5');
+INSERT INTO `gestioneventos`.`descuento` (`id`, `nombre`, `porcentaje`) VALUES ('4', 'sin_descuento', '0');
+
+
+INSERT INTO `gestioneventos`.`persona` (`numero_documento`, `tipo_documento`, `nombre`, `correo`, `celular`) VALUES ('11211123123', 'cedula', 'Roger Calderon', 'roger@roger', '2341234');
+INSERT INTO `gestioneventos`.`persona` (`numero_documento`, `tipo_documento`, `nombre`, `correo`, `celular`) VALUES ('160004034', 'cedula', 'Santiago', 'santi@gmail.com', '3214335678');
+INSERT INTO `gestioneventos`.`persona` (`numero_documento`, `tipo_documento`, `nombre`, `correo`, `celular`) VALUES ('160004040', 'cedula', 'Johan', 'johan@gmail.com', '3205553434');
+INSERT INTO `gestioneventos`.`persona` (`numero_documento`, `tipo_documento`, `nombre`, `correo`, `celular`) VALUES ('160004041', 'cedula', 'Sharon', 'sharon@gmail.com', '3212335566');
+
+INSERT INTO `gestioneventos`.`login` (`id`, `usuario`, `tipo`, `password`, `id_persona`) VALUES ('1', 'santiortiz', 'vip', 'santi123', '160004034');
+INSERT INTO `gestioneventos`.`login` (`id`, `usuario`, `tipo`, `password`, `id_persona`) VALUES ('2', 'johanrl', 'normal', 'johan456', '160004040');
+INSERT INTO `gestioneventos`.`login` (`id`, `usuario`, `tipo`, `password`, `id_persona`) VALUES ('3', 'shardrn', 'vip', 'shar789', '160004041');
+INSERT INTO `gestioneventos`.`login` (`id`, `usuario`, `tipo`, `password`, `id_persona`) VALUES ('10', 'ingroger', 'admin', '12345', '11211123123');
+
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('98283', '2020-10-30', '12:12:00', '1', '99912', '50001', '98245');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('98282', '2020-10-30', '12:12:00', '1', '99912', '50002', '98245');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('98280', '2020-10-30', '12:12:00', '1', '99912', '50007', '98245');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('12145', '2020-11-11', '10:10:10', '2', '64555', '50002', '76542');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('56543', '2020-11-11', '10:10:10', '3', '64555', '50003', '76542');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('12376', '2020-11-11', '10:10:10', '1', '64555', '50004', '76542');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('91299', '2020-11-11', '07:10:00', '2', '32232', '50001', '98245');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('62739', '2020-11-11', '07:10:00', '2', '32232', '50002', '98245');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('65342', '2020-11-11', '07:10:00', '3', '32232', '50003', '98245');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('87283', '2020-11-11', '07:10:00', '1', '32232', '50004', '98245');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('66331', '2020-11-11', '07:10:00', '1', '32232', '50005', '98245');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('78123', '2020-10-20', '09:00:00', '2', '77665', '50006', '88756');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('81524', '2020-10-20', '09:00:00', '2', '77665', '50002', '88756');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('87526', '2020-10-20', '09:00:00', '1', '77665', '50003', '88756');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('96572', '2020-10-30', '12:10:00', '2', '98798', '50002', '98245');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('88221', '2020-10-30', '12:10:00', '1', '98798', '50005', '98245');
+
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('73321', '2021-10-30', '12:10:00', '1', '12566', '50001', '88756');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('93932', '2021-10-30', '12:10:00', '2', '12566', '50002', '88756');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('83433', '2021-10-30', '12:10:00', '3', '12566', '50007', '88756');
+
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('72263', '2022-10-30', '12:12:00', '2', '12566', '50003', '88756');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('92237', '2022-10-30', '12:12:00', '3', '12566', '50004', '88756');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('11287', '2022-10-30', '12:12:00', '3', '12566', '50007', '88756');
+
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('82732', '2020-10-10', '12:12:00', '2', '66548', '50002', '77744');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('52435', '2020-10-10', '12:12:00', '2', '66548', '50003', '77744');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('13243', '2020-10-10', '12:12:00', '2', '66548', '50004', '77744');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('16394', '2020-10-10', '12:12:00', '3', '66548', '50005', '77744');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('29473', '2020-10-10', '12:12:00', '1', '66548', '50007', '77744');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('72634', '2020-10-21', '12:30:00', '1', '23142', '50001', '77744');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('55261', '2020-10-21', '12:30:00', '2', '23142', '50003', '77744');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('44362', '2020-10-21', '12:30:00', '3', '23142', '50007', '77744');
+
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('11942', '2020-10-09', '12:00:00', '2', '86283', '50002', '11226');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('12987', '2020-10-09', '12:00:00', '2', '86283', '50003', '11226');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('11174', '2020-10-09', '12:00:00', '2', '86283', '50004', '11226');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('72362', '2020-09-02', '10:15:00', '2', '92537', '50002', '11226');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('92837', '2020-09-02', '10:15:00', '1', '92537', '50003', '11226');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('82738', '2020-09-02', '10:15:00', '1', '92537', '50007', '11226');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('82733', '2020-10-04', '11:30:00', '1', '76278', '50002', '44324');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('62536', '2020-10-04', '11:30:00', '2', '76278', '50003', '44324');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('43432', '2020-10-04', '11:30:00', '2', '76278', '50004', '44324');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('62342', '2020-10-04', '11:30:00', '2', '76278', '50005', '44324');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('88227', '2020-08-01', '11:00:00', '2', '56721', '50005', '44324');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('33556', '2020-08-01', '11:00:00', '2', '56721', '50006', '44324');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('55443', '2020-08-01', '11:00:00', '2', '56721', '50007', '44324');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('62929', '2020-11-4', '2:00', '2', '12333', '60001', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('67209', '2020-11-4', '2:00', '1', '12333', '60006', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('23124', '2020-11-4', '2:00', '3', '12333', '60007', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('32212', '2020-11-4', '2:00', '2', '12333', '60008', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('32233', '2020-12-28', '6:00', '1', '23344', '60007', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('12333', '2020-12-28', '6:00', '2', '23344', '60006', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('32998', '2020-12-28', '6:00', '3', '23344', '60004', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('67120', '2020-12-28', '6:00', '1', '23344', '60002', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('23413', '2020-12-23', '11:00', '1', '32212', '50001', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('23112', '2020-12-23', '11:00', '1', '32212', '50004', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('39987', '2020-12-23', '11:00', '2', '32212', '50006', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('68903', '2020-12-23', '11:00', '3', '32212', '60007', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('20091', '2020-12-23', '11:00', '2', '32212', '60006', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('32819', '2020-12-23', '11:00', '2', '32212', '60008', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('29812', '2020-11-20', '23:00', '3', '32445', '60007', '34222');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('21293', '2020-11-20', '23:00', '2', '32445', '60005', '34222');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('20092', '2020-11-20', '23:00', '3', '32445', '60004', '34222');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('12001', '2020-11-20', '23:00', '1', '32445', '60008', '34222');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('29980', '2020-11-20', '23:00', '3', '32445', '50001', '34222');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('12901', '2020-12-29', '13:00', '1', '32331', '50001', '31224');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('29901', '2020-12-29', '15:00', '2', '32331', '50005', '31224');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('20095', '2020-12-29', '15:00', '3', '32331', '50008', '31224');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('90011', '2020-12-29', '15:00', '2', '32331', '60008', '31224');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('90017', '2020-12-29', '15:00', '3', '32331', '60006', '31224');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('82891', '2020-12-03', '18:00', '2', '32565', '60007', '32115');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('38912', '2020-12-03', '18:00', '3', '32565', '60006', '32115');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('72615', '2020-12-03', '18:00', '2', '32565', '60005', '32115');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('87262', '2020-12-03', '18:00', '2', '32565', '60004', '32115');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('76881', '2020-12-03', '18:00', '3', '32565', '50001', '32115');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('10928', '2020-11-27', '18:30', '2', '21223', '50001', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('89101', '2020-11-27', '18:30', '1', '21223', '50006', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('87625', '2020-11-27', '18:30', '1', '21223', '60007', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('27819', '2020-11-27', '18:30', '3', '21223', '60006', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('10091', '2020-11-27', '18:30', '3', '21223', '60008', '23112');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('69018', '2020-12-12', '17:20', '2', '32292', '60008', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('79018', '2020-12-12', '17:20', '3', '32292', '60001', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('57189', '2020-12-12', '17:20', '2', '32292', '60002', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('89291', '2020-12-12', '17:20', '2', '32292', '60003', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('19982', '2020-12-12', '17:20', '3', '32292', '50007', '23451');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('16625', '2020-11-11', '15:00', '2', '23442', '50007', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('71817', '2020-11-11', '15:00', '2', '23442', '50006', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('12223', '2020-11-11', '15:00', '3', '23442', '60007', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('45569', '2020-11-11', '15:00', '2', '23442', '60001', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('82712', '2020-11-11', '15:00', '3', '23442', '60002', '23177');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('29912', '2020-11-11', '15:00', '2', '23442', '60004', '23177');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('11999', '2020-09-15', '12:00:00', '3', '23113', '89513', '44318');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('11888', '2020-09-15', '12:00:00', '3', '23113', '89514', '44318');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('11777', '2020-09-15', '12:00:00', '3', '23113', '89515', '44318');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('11882', '2020-09-16', '10:40:00', '1', '23112', '77215', '44318');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('11772', '2020-09-16', '10:40:00', '1', '23112', '77216', '44318');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('13999', '2020-08-25', '12:45:00', '2', '23112', '89515', '44319');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('13888', '2020-08-25', '12:45:00', '2', '23112', '89516', '44319');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('13777', '2020-08-25', '12:45:00', '2', '23112', '89517', '44319');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('13881', '2020-08-29', '03:45:00', '3', '23113', '77214', '44319');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('13771', '2020-08-29', '03:45:00', '3', '23113', '77216', '44319');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('14999', '2020-07-12', '02:45:00', '1', '23112', '89514', '44320');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('14888', '2020-07-12', '02:45:00', '1', '23112', '89515', '44320');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('14777', '2020-07-12', '02:45:00', '1', '23112', '89516', '44320');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('14994', '2020-07-19', '04:35:00', '2', '23113', '89514', '44320');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('14884', '2020-09-19', '04:35:00', '2', '23113', '77215', '44320');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('14774', '2020-09-19', '04:35:00', '3', '23113', '77216', '44320');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('19971', '2020-06-29', '05:35:00', '3', '25333', '77215', '45323');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('19871', '2020-06-29', '05:35:00', '3', '25333', '77216', '45323');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('19771', '2020-06-29', '05:35:00', '3', '25333', '77217', '45323');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('22871', '2020-10-18', '09:35:00', '2', '25334', '89513', '45323');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('22771', '2020-10-18', '09:35:00', '2', '25334', '89514', '45323');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('20871', '2020-08-29', '06:35:00', '2', '25334', '89516', '45322');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('20771', '2020-08-29', '06:35:00', '2', '25334', '89517', '45322');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('23771', '2020-10-21', '10:35:00', '1', '25333', '77213', '45322');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('23871', '2020-10-21', '10:35:00', '1', '25333', '77214', '45322');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('23971', '2020-10-21', '10:35:00', '1', '25333', '77215', '45322');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('21971', '2020-05-30', '07:35:00', '1', '25334', '77215', '45321');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('21871', '2020-05-30', '07:35:00', '1', '25334', '77216', '45321');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('21771', '2020-05-30', '07:35:00', '1', '25334', '77217', '45321');
+
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('24971', '2020-10-12', '02:35:00', '2', '25333', '89515', '45321');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('24871', '2020-10-12', '02:35:00', '2', '25333', '89516', '45321');
+INSERT INTO `gestioneventos`.`funcion` (`id`, `fecha`, `hora`, `id_login`, `id_recinto`, `id_silla`, `id_evento`) VALUES ('24771', '2020-10-12', '02:35:00', '2', '25333', '77217', '45321');
+
+
+
+
+INSERT INTO `gestioneventos`.`persona` (`numero_documento`, `tipo_documento`, `nombre`, `correo`, `celular`) VALUES ('100001000', 'cedula', 'root', 'root@gmail.com', '3102227788');
+INSERT INTO `gestioneventos`.`login` (`id`, `usuario`, `tipo`, `password`, `id_persona`) VALUES ('110', 'root', 'admin', 'root', '100001000');
